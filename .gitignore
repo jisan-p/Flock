@@ -1,5 +1,3 @@
 build/
 ideastofollow/
 .DS_Store
-MenuScreen.hpp
-MenuScreen.cpp

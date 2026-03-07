@@ -13,6 +13,7 @@ add_executable(flock
     main.cpp 
     ui/LoadingScreen.cpp
     ui/MenuScreen.cpp
+    ui/color.cpp
 )
 
 # Find and link the threading library safely
