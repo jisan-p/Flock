@@ -7,7 +7,7 @@
 class MenuScreen : public Screen {
 private:
   std::string nextScreen;
-  bool isRunning;
+  bool firstRender;   // true on first call to render(); draws static skeleton
   int selectedIndex;
 
 public:

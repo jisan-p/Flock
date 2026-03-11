@@ -1,21 +1,26 @@
 #ifndef TERMINAL_HPP
 #define TERMINAL_HPP
 
+// uses ANSI Escape Codes to treat the terminal like a 2D canvas
+
 #include <iostream>
 #include <string>
 #include <mutex>
 
 /////
-#include <termios.h>
+#include <termios.h> 
 #include <unistd.h>
 #include <cstdio>
 /////
 
 namespace Terminal {
-    inline std::mutex screenMutex;
+    extern std::mutex screenMutex; // extern is used to declare a variable that is defined in another file
 
 
     // this is added for the menu screen
+    // getch() reads a single character from the keyboard without waiting for Enter.
+    // exitAlternateScreen() exits the alternate screen.
+    
     inline int getch() {
         struct termios oldt, newt;
         int ch;
@@ -33,9 +38,12 @@ namespace Terminal {
     }
     //////end 
     
+
+
+
     // Clears the entire terminal screen and moves cursor to top-left (1,1)
     inline void clear() {
-        std::cout << "\033[2J\033[H";
+        std::cout << "\033[2J\033[H"; // \033[2J\033[H is an ANSI escape code that clears the screen and moves the cursor to the top-left corner
     }
 
     // Teleports the cursor to a specific row (Y) and column (X)
