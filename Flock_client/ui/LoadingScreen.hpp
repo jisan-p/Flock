@@ -1,5 +1,4 @@
-#ifndef LOADING_SCREEN_HPP
-#define LOADING_SCREEN_HPP
+#pragma once
 
 #include "Screen.hpp" // The abstract base class we discussed
 #include <string>
@@ -10,10 +9,8 @@ private:
     bool isConnected;
 
 public:
-    LoadingScreen();
+    LoadingScreen(); // why constructor is here? because we need to initialize the nextScreen and isConnected
     void render() override;
     void handleInput() override;
     std::string getNextScreen() override;
 };
-
-#endif
