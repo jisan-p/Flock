@@ -14,10 +14,11 @@ find_package(Threads REQUIRED)
 add_executable(FlockServer 
     main.cpp 
     Database/Database.cpp
+    Network/TCPServer.cpp
 )
 
 # Tell the compiler where to find the header files (.hpp)
-target_include_directories(FlockServer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Database)
+target_include_directories(FlockServer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Link the threading library to the executable
 target_link_libraries(FlockServer PRIVATE Threads::Threads)
