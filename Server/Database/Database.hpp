@@ -42,15 +42,13 @@ public:
     // Constructor to initialize paths
     Database();
 
-    // --------------------------------------------------------
     // User Authentication & Management
-    // --------------------------------------------------------
     bool registerUser(const User& newUser);
     bool verifyLogin(const std::string& targetUsername, const std::string& targetPassword);
 
-    // --------------------------------------------------------
+
     // 1-to-1 Chat Operations
-    // --------------------------------------------------------
+
     
     // Appends a new timestamped message to the userA_userB.txt file
     bool appendMessage(const std::string& user1, const std::string& user2, const std::string& senderID, const std::string& encryptedMsg);
@@ -59,9 +57,9 @@ public:
     // Returns a vector of strings, where each string is a formatted line from the file
     std::vector<std::string> loadChatHistory(const std::string& user1, const std::string& user2);
 
-    // --------------------------------------------------------
+
     // User Lookup
-    // --------------------------------------------------------
+
     
     // Returns a list of all registered usernames
     std::vector<std::string> listUsers();
