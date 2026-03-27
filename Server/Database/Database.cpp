@@ -5,8 +5,8 @@
 
 // constructor initializes the paths
 Database::Database() {
-    usersFile = "Database/users.txt";
-    chatDirectory = "Database/chats_1-1/";
+    usersFile = "../Database/users.txt";
+    chatDirectory = "../Database/chats_1-1/";
 }
 
 

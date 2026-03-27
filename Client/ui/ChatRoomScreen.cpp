@@ -12,12 +12,12 @@ void ChatRoomScreen::render() {
     Terminal::clear();
     Terminal::hideCursor();
 
-    // ---- Header ----
+    //header:
     Terminal::printAt(1, 5, Color::bold(Color::cyan("Chat with " + chatPartner)));
     Terminal::printAt(1, 55, Color::green("You: " + client.myUsername));
     Terminal::printAt(2, 5, std::string(70, '-'));
 
-    // ---- Messages area (rows 3 to 20) ----
+    //messages area (rows 3 to 20):
     {
         std::lock_guard<std::mutex> msgLock(messagesMutex);
 
@@ -42,7 +42,7 @@ void ChatRoomScreen::render() {
         }
     }
 
-    // ---- Input area ----
+    //Input area
     Terminal::printAt(20, 5, std::string(70, '-'));
     Terminal::printAt(21, 5, Color::yellow("> ") + inputBuffer);
     Terminal::printAt(23, 5, "[Enter] Send    [ESC] Back to Home");
@@ -72,7 +72,7 @@ void ChatRoomScreen::handleInput() {
         }
     }
 
-    // Set up the real-time message callback
+    //set up the real-time message callback
     client.setMessageCallback([this](const std::string& rawMsg) {
         // Parse: MSG|sender|content
         std::stringstream ss(rawMsg);
@@ -87,10 +87,10 @@ void ChatRoomScreen::handleInput() {
         }
     });
 
-    // Start listening for incoming messages
+    // start listening for incoming messages
     client.startListening();
 
-    // Main input loop
+    // main input loop
     inputBuffer = "";
     render();
 

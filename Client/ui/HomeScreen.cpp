@@ -65,9 +65,6 @@ void HomeScreen::handleInput() {
         int key = Terminal::getch();
 
         if (key == 27) {
-            // Could be ESC or arrow key
-            // Try to read more - arrow keys send ESC + '[' + letter
-            // Use a small peek to differentiate
             int next1 = Terminal::getch();
             if (next1 == '[') {
                 int next2 = Terminal::getch();
@@ -77,7 +74,6 @@ void HomeScreen::handleInput() {
                     if (selectedIndex < (int)userList.size() - 1) selectedIndex++;
                 }
             } else {
-                // Just ESC - logout and go back
                 client.sendCommand("LOGOUT");
                 nextScreen = "MenuScreen";
                 return;
@@ -85,7 +81,6 @@ void HomeScreen::handleInput() {
         }
 
         else if (key == 'r' || key == 'R') {
-            // Refresh the user list
             userList = client.listUsers();
             std::vector<std::string> filtered2;
             for (const auto& u : userList) {

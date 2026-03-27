@@ -7,7 +7,8 @@
 #include <arpa/inet.h>
 #include <sstream>
 
-//constructor & destructor
+//constructor & destructor:
+
 TCPClient::TCPClient(const std::string& ip, int port)
     : serverIP(ip), serverPort(port), sock(-1), connected(false), listening(false) {}
 
@@ -16,23 +17,23 @@ TCPClient::~TCPClient() {
     disconnect();
 }
 
-//connectToServer() - Establishes TCP connection
+//connectToServer() - Establishes TCP connection:
 
 bool TCPClient::connectToServer() {
-    // 1. Create the socket
+    // 1. create socket
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
         std::cerr << "Error: Could not create socket.\n";
         return false;
     }
 
-    // 2. Set up the server address
+    // 2. set up  server address
     struct sockaddr_in serverAddr;
     memset(&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port   = htons(serverPort);
 
-    // Convert IP string to binary
+    //convertion of IP string to binary
     if (inet_pton(AF_INET, serverIP.c_str(), &serverAddr.sin_addr) <= 0) {
         std::cerr << "Error: Invalid server IP address.\n";
         close(sock);
@@ -40,7 +41,7 @@ bool TCPClient::connectToServer() {
         return false;
     }
 
-    // 3. Connect to the server
+    // 3. connect to server
     if (connect(sock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
         close(sock);
         sock = -1;
@@ -52,7 +53,7 @@ bool TCPClient::connectToServer() {
 }
 
 
-//disconnect() - Closes the connection
+//disconnect() - Closes the connection:
 
 void TCPClient::disconnect() {
     connected = false;
@@ -67,7 +68,7 @@ bool TCPClient::isConnected() const {
 }
 
 
-//sendCommand():  sends a command n reads one line response
+//sendCommand():  sends a command n reads one line response:
 
 std::string TCPClient::sendCommand(const std::string& command) {
     std::lock_guard<std::mutex> lock(sendMutex);
@@ -102,7 +103,6 @@ std::string TCPClient::sendCommand(const std::string& command) {
 
 
 // High-level commands:
-
 
 bool TCPClient::login(const std::string& username, const std::string& password) {
     std::string response = sendCommand("LOGIN|" + username + "|" + password);
@@ -203,7 +203,7 @@ std::vector<std::string> TCPClient::getChatHistory(const std::string& targetUser
     return history;
 }
 
-// Real-time message listener
+//real-time message listener:
 
 void TCPClient::setMessageCallback(std::function<void(const std::string&)> callback) {
     messageCallback = callback;
