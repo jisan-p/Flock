@@ -21,6 +21,6 @@ public:
     void handleInput() override;
     std::string getNextScreen() override;
 
-    // Getter for ChatRoomScreen to know who we're chatting with
+    // getter for ChatRoomScreen to know who we're chatting with
     std::string getSelectedUser() const;
 };
