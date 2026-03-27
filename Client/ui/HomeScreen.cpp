@@ -38,7 +38,7 @@ void HomeScreen::render() {
 
     // Footer
     int footerRow = 7 + (int)userList.size() + 2;
-    Terminal::printAt(footerRow, 5, "[R] Refresh list    [ESC] Logout & back to menu");
+    Terminal::printAt(footerRow, 5, "[R] Refresh list                  [^C] Logout ");
 
     Terminal::showCursor();
     Terminal::flush();
