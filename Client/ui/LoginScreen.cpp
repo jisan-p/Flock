@@ -41,10 +41,10 @@ void LoginScreen::handleInput() {
     password = "";
     errorMsg = "";
 
-    // First render
+    //first render
     render();
 
-    // ---- Read username ----
+    //read username
     {
         std::lock_guard<std::mutex> lock(Terminal::screenMutex);
         Terminal::moveCursor(6, 25);
@@ -52,15 +52,15 @@ void LoginScreen::handleInput() {
         Terminal::flush();
     }
 
-    // Read username character by character
+    //read username ch by ch
     while (true) {
         int ch = Terminal::getch();
 
-        if (ch == 27) {  // ESC - go back
+        if (ch == 27) {  // ESC to go back
             nextScreen = "MenuScreen";
             return;
         }
-        if (ch == 10 || ch == 13) {  // Enter - move to password
+        if (ch == 10 || ch == 13) {  // Enter to move to password
             break;
         }
         if (ch == 127 || ch == 8) {  // Backspace
@@ -73,7 +73,7 @@ void LoginScreen::handleInput() {
             }
             continue;
         }
-        if (ch >= 32 && ch <= 126) {  // Printable character
+        if (ch >= 32 && ch <= 126) {  //printable character
             username += (char)ch;
             std::lock_guard<std::mutex> lock(Terminal::screenMutex);
             Terminal::printAt(6, 25, username);
@@ -81,7 +81,7 @@ void LoginScreen::handleInput() {
         }
     }
 
-    // Read password 
+    //read password
     {
         std::lock_guard<std::mutex> lock(Terminal::screenMutex);
         Terminal::moveCursor(8, 25);

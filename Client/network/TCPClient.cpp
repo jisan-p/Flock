@@ -228,6 +228,7 @@ void TCPClient::stopListening() {
 
 void TCPClient::listenerLoop() {
     while (listening && connected) {
+        
         // Use select() with a timeout so we can check the listening flag
         fd_set readSet;
         FD_ZERO(&readSet);
