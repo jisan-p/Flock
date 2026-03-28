@@ -17,7 +17,7 @@ TCPClient::~TCPClient() {
     disconnect();
 }
 
-//connectToServer() - Establishes TCP connection:
+//>>1. connectToServer() - Establishes TCP connection:
 
 bool TCPClient::connectToServer() {
     // 1. create socket
@@ -68,7 +68,7 @@ bool TCPClient::isConnected() const {
 }
 
 
-//sendCommand():  sends a command n reads one line response:
+//>> 2. sendCommand():  sends a command n reads one line response:
 
 std::string TCPClient::sendCommand(const std::string& command) {
     std::lock_guard<std::mutex> lock(sendMutex);
@@ -102,12 +102,12 @@ std::string TCPClient::sendCommand(const std::string& command) {
 }
 
 
-// High-level commands:
-
+//>> 3. High-level commands:
+//logins
 bool TCPClient::login(const std::string& username, const std::string& password) {
     std::string response = sendCommand("LOGIN|" + username + "|" + password);
 
-    // Parse: LOGIN_OK|userID|username  or  LOGIN_FAIL|reason
+    // parse: LOGIN_OK|userID|username  or  LOGIN_FAIL|reason
     std::stringstream ss(response);
     std::string status;
     std::getline(ss, status, '|');
@@ -120,6 +120,7 @@ bool TCPClient::login(const std::string& username, const std::string& password) 
     return false;
 }
 
+//register
 bool TCPClient::registerUser(const std::string& username, const std::string& password) {
     std::string response = sendCommand("REGISTER|" + username + "|" + password);
 
@@ -135,6 +136,7 @@ bool TCPClient::registerUser(const std::string& username, const std::string& pas
     return false;
 }
 
+//list users
 std::vector<std::string> TCPClient::listUsers() {
     std::string response = sendCommand("LIST_USERS");
 
@@ -158,18 +160,20 @@ std::vector<std::string> TCPClient::listUsers() {
     return users;
 }
 
+//send message(targetUser, message)
 bool TCPClient::sendMessage(const std::string& targetUser, const std::string& message) {
-    // If the listener is running, just fire-and-forget (don't block on recv)
+    // If the listener is running, just send
     // The listener thread is already reading from the socket
     if (listening) {
         sendOnly("SEND|" + targetUser + "|" + message);
         return true;
     }
-    // Otherwise, use normal send + recv
+    // otherwise, use normal send + recv
     std::string response = sendCommand("SEND|" + targetUser + "|" + message);
     return (response.find("SEND_OK") != std::string::npos);
 }
 
+//send only
 void TCPClient::sendOnly(const std::string& command) {
     std::lock_guard<std::mutex> lock(sendMutex);
     
@@ -203,13 +207,14 @@ std::vector<std::string> TCPClient::getChatHistory(const std::string& targetUser
     return history;
 }
 
-//real-time message listener:
+//>> listener: (real-time receiving)
 
 void TCPClient::setMessageCallback(std::function<void(const std::string&)> callback) {
     messageCallback = callback;
 }
 
-void TCPClient::startListening() {
+//start listening will create a thread:
+void TCPClient::startListening() { 
     listening = true;
     listenerThread = std::thread(&TCPClient::listenerLoop, this);
 }

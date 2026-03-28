@@ -53,13 +53,14 @@ void ChatRoomScreen::render() {
     //Input area
     Terminal::printAt(20, 5, std::string(70, '-'));
     Terminal::printAt(21, 5, Color::yellow("> ") + inputBuffer);
-    Terminal::printAt(23, 5, "[Enter] Send  [m] Scroll Up  [n] Scroll Down  [ESC] Back");
+    Terminal::printAt(23, 5, "[Enter] Send  [<] Scroll Up  [>] Scroll Down  [ESC] Back");
 
     Terminal::showCursor();
     Terminal::moveCursor(21, 7 + (int)inputBuffer.size());
     Terminal::flush();
 }
 
+//starts from here
 void ChatRoomScreen::handleInput() {
     // Load chat history from the server
     std::vector<std::string> history = client.getChatHistory(chatPartner);
@@ -68,7 +69,7 @@ void ChatRoomScreen::handleInput() {
         std::lock_guard<std::mutex> lock(messagesMutex);
         messages.clear();
 
-        // Parse history lines: timestamp|sender|message
+        //Parse history lines: timestamp|sender|message
         for (const auto& line : history) {
             std::stringstream ss(line);
             std::string timestamp, sender, msg;
@@ -138,7 +139,7 @@ void ChatRoomScreen::handleInput() {
             }
         }
 
-        else if (ch == 'm' || ch == 'M') {
+        else if (ch == '<') {
             // Scroll up (older messages)
             {
                 std::lock_guard<std::mutex> msgLock(messagesMutex);
@@ -152,7 +153,7 @@ void ChatRoomScreen::handleInput() {
             render();
         }
 
-        else if (ch == 'n' || ch == 'N') {
+        else if (ch == '>') {
             // Scroll down (newer messages)
             if (scrollOffset > 0) {
                 scrollOffset--;

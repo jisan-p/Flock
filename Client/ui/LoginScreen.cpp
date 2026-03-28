@@ -81,7 +81,7 @@ void LoginScreen::handleInput() {
         }
     }
 
-    // ---- Read password ----
+    // Read password 
     {
         std::lock_guard<std::mutex> lock(Terminal::screenMutex);
         Terminal::moveCursor(8, 25);
@@ -118,7 +118,7 @@ void LoginScreen::handleInput() {
         }
     }
 
-    // ---- Try to login ----
+    // Try to login
     if (username.empty() || password.empty()) {
         errorMsg = "Username and password cannot be empty!";
         render();
