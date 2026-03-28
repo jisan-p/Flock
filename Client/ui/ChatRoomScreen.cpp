@@ -4,7 +4,7 @@
 #include <sstream>
 
 ChatRoomScreen::ChatRoomScreen(TCPClient& client, const std::string& partner)
-    : client(client), chatPartner(partner), nextScreen(""), inputBuffer("") {}
+    : client(client), chatPartner(partner), nextScreen(""), inputBuffer(""), scrollOffset(0) {}
 
 void ChatRoomScreen::render() {
     std::lock_guard<std::mutex> lock(Terminal::screenMutex);
@@ -21,15 +21,18 @@ void ChatRoomScreen::render() {
     {
         std::lock_guard<std::mutex> msgLock(messagesMutex);
 
-        int maxDisplay = 16;  // Number of message lines to show
-        int startIdx = 0;
-        if ((int)messages.size() > maxDisplay) {
-            startIdx = (int)messages.size() - maxDisplay;
-        }
+        int maxDisplay = 16;  // Number of message lines to show per page
+        int totalMessages = (int)messages.size();
+
+        // Calculate the end index based on scrollOffset
+        int endIdx = totalMessages - (scrollOffset * maxDisplay);
+        if (endIdx < 0) endIdx = 0;
+
+        int startIdx = endIdx - maxDisplay;
+        if (startIdx < 0) startIdx = 0;
 
         int row = 3;
-        for (int i = startIdx; i < (int)messages.size(); i++) {
-            // Parse the message: format is "sender: message"
+        for (int i = startIdx; i < endIdx; i++) {
             std::string line = messages[i];
 
             // Color our own messages differently
@@ -40,12 +43,17 @@ void ChatRoomScreen::render() {
             }
             row++;
         }
+
+        // Show scroll indicator
+        if (scrollOffset > 0) {
+            Terminal::printAt(19, 60, Color::cyan("[Page " + std::to_string(scrollOffset + 1) + "]"));
+        }
     }
 
     //Input area
     Terminal::printAt(20, 5, std::string(70, '-'));
     Terminal::printAt(21, 5, Color::yellow("> ") + inputBuffer);
-    Terminal::printAt(23, 5, "[Enter] Send    [ESC] Back to Home");
+    Terminal::printAt(23, 5, "[Enter] Send  [m] Scroll Up  [n] Scroll Down  [ESC] Back");
 
     Terminal::showCursor();
     Terminal::moveCursor(21, 7 + (int)inputBuffer.size());
@@ -83,7 +91,8 @@ void ChatRoomScreen::handleInput() {
 
         if (cmd == "MSG" && sender == chatPartner) {
             addMessage(sender + ": " + content);
-            render();  // Refresh the screen
+            scrollOffset = 0;  // Jump to latest on new message
+            render();
         }
     });
 
@@ -115,6 +124,7 @@ void ChatRoomScreen::handleInput() {
                 // Add to our display
                 addMessage(client.myUsername + ": " + inputBuffer);
 
+                scrollOffset = 0;  // Jump to latest on send
                 inputBuffer = "";
                 render();
             }
@@ -126,6 +136,28 @@ void ChatRoomScreen::handleInput() {
                 inputBuffer.pop_back();
                 render();
             }
+        }
+
+        else if (ch == 'm' || ch == 'M') {
+            // Scroll up (older messages)
+            {
+                std::lock_guard<std::mutex> msgLock(messagesMutex);
+                int maxDisplay = 16;
+                int maxOffset = ((int)messages.size() - 1) / maxDisplay;
+                if (maxOffset < 0) maxOffset = 0;
+                if (scrollOffset < maxOffset) {
+                    scrollOffset++;
+                }
+            }
+            render();
+        }
+
+        else if (ch == 'n' || ch == 'N') {
+            // Scroll down (newer messages)
+            if (scrollOffset > 0) {
+                scrollOffset--;
+            }
+            render();
         }
 
         else if (ch >= 32 && ch <= 126) {

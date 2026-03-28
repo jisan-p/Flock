@@ -16,6 +16,7 @@ private:
     std::vector<std::string> messages;  // Displayed messages
     std::mutex messagesMutex;           // Protects the messages vector
     std::string inputBuffer;            // Current input text
+    int scrollOffset;                   // 0 = latest messages, positive = scrolled up
 
 public:
     ChatRoomScreen(TCPClient& client, const std::string& partner);
