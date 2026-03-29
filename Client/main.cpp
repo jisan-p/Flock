@@ -12,7 +12,7 @@
 #include <iostream>
 
 int main() {
-    TCPClient client("127.0.0.1", 4444);
+    TCPClient client("192.168.0.221", 4444);
 
     LoadingScreen splash;
     splash.render();
@@ -23,7 +23,7 @@ int main() {
     Terminal::moveCursor(1, 1);
 
     if (!connected) {
-        std::cout << "Could not connect to server at 127.0.0.1:4444\n";
+        std::cout << "Could not connect to server at 192.168.0.221:4444\n";
         std::cout << "Make sure the Flock server is running first!\n";
         return 1;
     }

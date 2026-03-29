@@ -7,9 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-// ============================================================
 // Constructor & Destructor
-// ============================================================
 
 TCPServer::TCPServer(Database& database, int port)
     : db(database), port(port), serverSocket(-1), running(false) {}
@@ -18,9 +16,7 @@ TCPServer::~TCPServer() {
     stop();
 }
 
-// ============================================================
 // start() - Binds, listens, and accepts clients in a loop
-// ============================================================
 
 void TCPServer::start() {
     // 1. Create the socket
@@ -38,7 +34,7 @@ void TCPServer::start() {
     struct sockaddr_in serverAddr;
     memset(&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family      = AF_INET;
-    serverAddr.sin_addr.s_addr = INADDR_ANY;  // Accept connections from any IP
+    serverAddr.sin_addr.s_addr = INADDR_ANY;  // Accept connections from any IP =====================
     serverAddr.sin_port        = htons(port);
 
     if (bind(serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
@@ -78,9 +74,7 @@ void TCPServer::start() {
     }
 }
 
-// ============================================================
 // stop() - Shuts down the server
-// ============================================================
 
 void TCPServer::stop() {
     running = false;
@@ -96,9 +90,7 @@ void TCPServer::stop() {
     clientThreads.clear();
 }
 
-// ============================================================
 // handleClient() - Runs in its own thread, one per client
-// ============================================================
 
 void TCPServer::handleClient(int clientSocket) {
     std::string currentUser = "";  // Empty until they login
@@ -118,7 +110,7 @@ void TCPServer::handleClient(int clientSocket) {
         }
     }
 
-    // ---- Cleanup: remove from online clients ----
+    // Cleanup: remove from online clients
     if (!currentUser.empty()) {
         std::lock_guard<std::mutex> lock(clientsMutex);
         onlineClients.erase(currentUser);
@@ -128,9 +120,7 @@ void TCPServer::handleClient(int clientSocket) {
     close(clientSocket);
 }
 
-// ============================================================
 // processCommand() - Parses and handles one protocol command
-// ============================================================
 
 std::string TCPServer::processCommand(const std::string& command, int clientSocket, const std::string& currentUser) {
     std::vector<std::string> parts = Protocol::split(command);
@@ -139,7 +129,7 @@ std::string TCPServer::processCommand(const std::string& command, int clientSock
 
     std::string cmd = parts[0];
 
-    // ---- LOGIN|username|password ----
+    //LOGIN|username|password
     if (cmd == Protocol::LOGIN && parts.size() >= 3) {
         std::string username = parts[1];
         std::string password = parts[2];
