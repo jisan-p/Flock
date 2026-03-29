@@ -22,8 +22,7 @@ void HomeScreen::render() {
     // User list
     if (userList.empty()) {
         Terminal::printAt(7, 10, Color::yellow("No other users found. Ask a friend to register!"));
-    } 
-    else {
+    } else {
         for (int i = 0; i < (int)userList.size(); i++) {
             int row = 7 + i;
             std::string label = "  " + userList[i];
@@ -47,9 +46,9 @@ void HomeScreen::render() {
 
 void HomeScreen::handleInput() {
     // Fetch the user list from the server
-    userList = client.listUsers(); //from tcpclient.cpp 
+    userList = client.listUsers();
 
-    // remove our own username from the list
+    // Remove our own username from the list
     std::vector<std::string> filtered;
     for (const auto& u : userList) {
         if (u != client.myUsername) {

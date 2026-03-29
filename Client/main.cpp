@@ -12,28 +12,24 @@
 #include <iostream>
 
 int main() {
-    //1. tcp client created
-    TCPClient client("192.168.0.100", 4444);
+    TCPClient client("127.0.0.1", 4444);
 
-    //2.loading screen is rendered
     LoadingScreen splash;
     splash.render();
 
-    //3.client server connect
     bool connected = client.connectToServer();
 
     Terminal::clear();
     Terminal::moveCursor(1, 1);
 
     if (!connected) {
-        std::cout << "Could not connect to server at 192.168.0.100:4444\n";
-        std::cout << "Make sure the Flock server is running out first!\n";
+        std::cout << "Could not connect to server at 127.0.0.1:4444\n";
+        std::cout << "Make sure the Flock server is running first!\n";
         return 1;
     }
 
     std::string currentScreen = "MenuScreen";
 
-    //menuloop, repeatedly checks current screen and renders it
     while (true) {
         //main menu
         if (currentScreen == "MenuScreen") {
@@ -100,7 +96,7 @@ int main() {
             }
         }
 
-        //settings is not implemented yet
+        //unknown screen this is for 
         else {
             Terminal::clear();
             std::cout << "Unknown screen: " << currentScreen << "\n";

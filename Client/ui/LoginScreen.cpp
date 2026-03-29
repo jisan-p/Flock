@@ -41,10 +41,10 @@ void LoginScreen::handleInput() {
     password = "";
     errorMsg = "";
 
-    //first render
+    // First render
     render();
 
-    //read username
+    // ---- Read username ----
     {
         std::lock_guard<std::mutex> lock(Terminal::screenMutex);
         Terminal::moveCursor(6, 25);
@@ -52,15 +52,15 @@ void LoginScreen::handleInput() {
         Terminal::flush();
     }
 
-    //read username ch by ch
+    // Read username character by character
     while (true) {
         int ch = Terminal::getch();
 
-        if (ch == 27) {  // ESC to go back
+        if (ch == 27) {  // ESC - go back
             nextScreen = "MenuScreen";
             return;
         }
-        if (ch == 10 || ch == 13) {  // Enter to move to password
+        if (ch == 10 || ch == 13) {  // Enter - move to password
             break;
         }
         if (ch == 127 || ch == 8) {  // Backspace
@@ -73,7 +73,7 @@ void LoginScreen::handleInput() {
             }
             continue;
         }
-        if (ch >= 32 && ch <= 126) {  //printable character
+        if (ch >= 32 && ch <= 126) {  // Printable character
             username += (char)ch;
             std::lock_guard<std::mutex> lock(Terminal::screenMutex);
             Terminal::printAt(6, 25, username);
@@ -81,7 +81,7 @@ void LoginScreen::handleInput() {
         }
     }
 
-    //read password
+    // ---- Read password ----
     {
         std::lock_guard<std::mutex> lock(Terminal::screenMutex);
         Terminal::moveCursor(8, 25);
@@ -118,7 +118,7 @@ void LoginScreen::handleInput() {
         }
     }
 
-    // Try to login
+    // ---- Try to login ----
     if (username.empty() || password.empty()) {
         errorMsg = "Username and password cannot be empty!";
         render();
