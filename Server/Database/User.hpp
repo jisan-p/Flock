@@ -1,6 +1,5 @@
+// Fix User deserialization to handle lines without trailing pipe
 #pragma once
-
-
 #include <string>
 #include <sstream>
 

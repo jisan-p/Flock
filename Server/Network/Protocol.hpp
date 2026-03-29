@@ -1,6 +1,8 @@
 #pragma once
 
 // Protocol.hpp - Shared text protocol for Flock
+// Messages are pipe-delimited strings ending with newline (\n)
+// Example: "LOGIN|username|password\n"
 
 #include <string>
 #include <vector>
@@ -8,7 +10,7 @@
 
 namespace Protocol {
 
-    // command strings (Client -> Server)
+    // Command strings (Client -> Server)
     const std::string LOGIN       = "LOGIN";
     const std::string REGISTER    = "REGISTER";
     const std::string SEND        = "SEND";
@@ -16,7 +18,7 @@ namespace Protocol {
     const std::string LIST_USERS  = "LIST_USERS";
     const std::string LOGOUT      = "LOGOUT";
 
-    // response strings (Server -> Client)
+    // Response strings (Server -> Client)
     const std::string LOGIN_OK    = "LOGIN_OK";
     const std::string LOGIN_FAIL  = "LOGIN_FAIL";
     const std::string REGISTER_OK = "REGISTER_OK";
@@ -28,7 +30,7 @@ namespace Protocol {
     const std::string USERS_LIST  = "USERS_LIST";
     const std::string MSG         = "MSG";  // Server pushes incoming message to client
 
-    // hhelper: split a string by '|' delimiter
+    // Helper: split a string by '|' delimiter
     inline std::vector<std::string> split(const std::string& line) {
         std::vector<std::string> parts;
         std::stringstream ss(line);
@@ -40,7 +42,7 @@ namespace Protocol {
         return parts;
     }
 
-    // hhelper: join parts with '|' delimiter
+    // Helper: join parts with '|' delimiter
     inline std::string join(const std::vector<std::string>& parts) {
         std::string result;
         for (size_t i = 0; i < parts.size(); i++) {
