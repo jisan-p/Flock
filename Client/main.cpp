@@ -12,7 +12,7 @@
 #include <iostream>
 
 int main() {
-    TCPClient client("192.168.0.221", 4444);
+    TCPClient client("127.0.0.1", 4444);
 
     LoadingScreen splash;
     splash.render();

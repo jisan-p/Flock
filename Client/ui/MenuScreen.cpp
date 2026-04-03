@@ -17,25 +17,64 @@ void MenuScreen::render() {
   Terminal::hideCursor();
 
   if (firstRender) {
-    // Draw static skeleton exactly once
     Terminal::clear();
-    Terminal::printAt(5,  38, "Flock");
-    Terminal::printAt(22,  5, "Guide: type number or arrow keys + Enter");
-    Terminal::printAt(25,  5, "server: localHost:4444");
-    Terminal::printAt(25, 70, "online");
-    Terminal::printAt(19, 10, "> ");
+
+    // ── ASCII art logo (green) ──
+    Terminal::printAt(2, 5, Color::yellow(" _____ _            _    "));
+    Terminal::printAt(3, 5, Color::yellow("|  ___| | ___   ___| | __"));
+    Terminal::printAt(4, 5, Color::yellow("| |_  | |/ _ \\ / __| |/ /"));
+    Terminal::printAt(5, 5, Color::yellow("|  _| | | (_) | (__|   < "));
+    Terminal::printAt(6, 5, Color::yellow("|_|   |_|\\___/ \\___|_|\\_\\"));
+
+    // ── Tagline next to logo ──
+    Terminal::printAt(5, 33, Color::green("github.com/jisan-p/Flock"));
+    Terminal::printAt(6, 33, Color::cyan("Terminal chat application."));
+
+    // ── Input prompt ──
+    Terminal::printAt(15, 3, "> ");
+
+    // ── Bottom shortcut bar ──
+    Terminal::printAt(20, 3,
+      Color::bold("\xe2\x86\x91\xe2\x86\x93") + "  |  " +
+      Color::bold("Enter") + " Select  |  " +
+      Color::bold("Q") + " Quit");
+
     firstRender = false;
   }
 
-  // Redraw only the option lines in-place (mutex already held)
-  Terminal::printAt(10, 10,
-    (selectedIndex == 1 ? Color::cyan("> [1]  Login")          : "  [1]  Login"));
-  Terminal::printAt(12, 10,
-    (selectedIndex == 2 ? Color::cyan("> [2]  Create Account") : "  [2]  Create Account"));
-  Terminal::printAt(14, 10,
-    (selectedIndex == 3 ? Color::cyan("> [3]  Settings")       : "  [3]  Settings"));
-  Terminal::printAt(16, 10,
-    (selectedIndex == 4 ? Color::cyan("> [4]  Exit")           : "  [4]  Exit"));
+  // ── Menu items ──
+  struct MenuItem { const char* label; const char* desc; };
+  MenuItem items[] = {
+    { "Login",            "Sign in to your account"    },
+    { "Create Account",   "Register a new account"     },
+    { "Settings",         "Configure preferences"      },
+    { "Exit",             "Quit the application"       },
+  };
+
+  for (int i = 0; i < 4; i++) {
+    int row = 9 + i;
+    int idx = i + 1;
+
+    char numBuf[8];
+    snprintf(numBuf, sizeof(numBuf), "%d.", idx);
+
+    // Pad label to 18 chars for alignment
+    std::string label(items[i].label);
+    while (label.size() < 18) label += ' ';
+
+    std::string line;
+    if (idx == selectedIndex) {
+      line = Color::bold(Color::yellow(
+        std::string("\xe2\x96\xb8 ") + numBuf + " " + label)) +
+        Color::bold(Color::yellow(std::string(items[i].desc)));
+    } else {
+      line = std::string("  ") + numBuf + " " + label + items[i].desc;
+    }
+
+    // Clear the row first, then print
+    Terminal::printAt(row, 3, "                                                            ");
+    Terminal::printAt(row, 3, line);
+  }
 
   Terminal::showCursor();
   Terminal::flush();
@@ -58,12 +97,14 @@ void MenuScreen::handleInput() {
     selectedIndex = 3;
     nextScreen    = "SettingsScreen";
 
-  } else if (key == '4') {
-    Terminal::exitAlternateScreen();
-    Terminal::showCursor();
-    Terminal::clear();
-    std::cout << "Exiting Flock...\n";
-    exit(0);
+  } else if (key == '4' || key == 'q' || key == 'Q') {
+    if (key == '4' || key == 'q' || key == 'Q') {
+      Terminal::exitAlternateScreen();
+      Terminal::showCursor();
+      Terminal::clear();
+      std::cout << "Exiting Flock...\n";
+      exit(0);
+    }
 
   } else if (key == 27) {
     // Arrow keys send ESC + '[' + letter
